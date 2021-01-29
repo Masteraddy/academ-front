@@ -1,0 +1,8 @@
+.responsive-ant-menu {
+  border: none;
+}
+.spin-class {
+  background: white;
+  height: 100vh;
+  z-index: 99;
+}

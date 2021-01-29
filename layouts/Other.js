@@ -1,24 +1,34 @@
-import { Layout, Menu, Avatar } from "antd";
-import React, { Component } from "react";
-import Link from "next/link";
-import ResponsiveAntMenu from "../components/ResponsiveAntMenu";
+import { Layout, Menu, Avatar } from 'antd';
+import React, { Component } from 'react';
+import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import { withRouter } from 'next/router';
+import ResponsiveAntMenu from '../components/ResponsiveAntMenu';
+import DashHeader from '../components/styles/Header';
+import { Container, Inner } from '../components/styles/Page';
 import {
   MenuOutlined,
   CloseOutlined,
   SmileOutlined,
   SettingOutlined,
   PlaySquareOutlined,
-} from "@ant-design/icons";
-import menuRoutes from "../libs/routes";
+} from '@ant-design/icons';
+import menuRoutes from '../libs/routes';
 
 const { Header, Sider, Content, Footer } = Layout;
+const PageContainer = dynamic(
+  () => import('@ant-design/pro-layout/lib/PageContainer'),
+  {
+    ssr: false,
+  },
+);
 
 const routeMenu = () =>
-  menuRoutes.routes.map((route, index) => {
+  menuRoutes().routes.map((route, index) => {
     const hasChildren = route.routes ? true : false;
     if (!hasChildren)
       return (
-        <Menu.Item key={route.path} className={"menu-home"}>
+        <Menu.Item key={route.path} className={'menu-home'}>
           <Link href={route.path}>
             <a>{route.name}</a>
           </Link>
@@ -28,7 +38,7 @@ const routeMenu = () =>
       return (
         <Menu.SubMenu key={route.path} title={route.name}>
           {route.routes.map((subitem, index) => (
-            <Menu.Item key={subitem.path} className={"menu-home"}>
+            <Menu.Item key={subitem.path} className={'menu-home'}>
               <Link href={subitem.path}>
                 <a>{subitem.name}</a>
               </Link>
@@ -51,64 +61,61 @@ class OtherLayout extends Component {
   };
 
   render() {
+    // console.log(menuRoutes().routes);
     return (
-      <Layout
-        style={{
-          minHeight: "100vh",
-        }}
-      >
+      <Layout>
         <Header
-          className="site-layout-background"
-          theme="light"
+          className='site-layout-background'
+          theme='light'
           style={{
             padding: 0,
-            position: "fixed",
-            width: "100%",
-            backgroundColor: "white",
+            position: 'fixed',
+            width: '100%',
+            backgroundColor: 'white',
             // position: "relative",
-            flexDirection: "row",
-            flexWrap: "nowrap",
-            display: "flex",
-            alignItems: "center",
-            minHeight: "3rem",
+            flexDirection: 'row',
+            flexWrap: 'nowrap',
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '3rem',
             zIndex: 11,
-            paddingRight: "1rem",
+            paddingRight: '1rem',
+            boxShadow: '0 3px 3px 0 rgba(0, 0, 0, 0.2)',
           }}
         >
           <div
-            className="logo"
+            className='logo'
             style={{
-              backgroundColor: "grey",
+              backgroundColor: 'grey',
               height: 40,
               width: 80,
-              margin: "8px",
+              margin: '8px',
             }}
           />
-          <span style={{ marginRight: "auto" }}></span>
+          <span style={{ marginRight: 'auto' }}></span>
           <ResponsiveAntMenu
-            activeLinkKey={"/"}
+            activeLinkKey={this.props.router.pathname}
             mobileMenuContent={(isMenuShown) =>
               isMenuShown ? <CloseOutlined /> : <MenuOutlined />
             }
-            mode={(isMobile) => (isMobile ? "vertical" : "horizontal")}
-            menuClassName={"responsive-ant-menu"}
+            mode={(isMobile) => (isMobile ? 'vertical' : 'horizontal')}
+            menuClassName={'responsive-ant-menu'}
             mobileBreakPoint={768}
           >
             {(onLinkClick) => <Menu>{routeMenu()}</Menu>}
           </ResponsiveAntMenu>
         </Header>
-        <Content>
-          <div
-            className="site-layout-background"
-            style={{ minHeight: 360, marginTop: "2rem" }}
-          >
-            {this.props.children}
-          </div>
-          <Footer>footer</Footer>
-        </Content>
+        <PageContainer
+          content={
+            <div>
+              {this.props.children}
+              <Footer>footer</Footer>
+            </div>
+          }
+        />
       </Layout>
     );
   }
 }
 
-export default OtherLayout;
+export default withRouter(OtherLayout);
